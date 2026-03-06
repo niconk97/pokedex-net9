@@ -12,14 +12,20 @@ public class AccesoDatosSQLITE : IDisposable
     {
         get
         {
-            // Intenta encontrar pokedex.db en el directorio actual o en script_db
-            var rutaActual = Path.Combine(Directory.GetCurrentDirectory(), "pokedex.db");
-            if (File.Exists(rutaActual))
-                return $"Data Source={rutaActual}";
+            // Opción 1 (PRIORIDAD): Subir un nivel y buscar en Pokedex.Negocio/script_db
+            var rutaNegocio = Path.Combine(Directory.GetCurrentDirectory(), "..", "Pokedex.Negocio", "script_db", "pokedex.db");
+            if (File.Exists(rutaNegocio))
+                return $"Data Source={Path.GetFullPath(rutaNegocio)}";
 
+            // Opción 2: En script_db dentro del directorio actual
             var rutaScriptDb = Path.Combine(Directory.GetCurrentDirectory(), "script_db", "pokedex.db");
             if (File.Exists(rutaScriptDb))
                 return $"Data Source={rutaScriptDb}";
+
+            // Opción 3: En el directorio actual
+            var rutaActual = Path.Combine(Directory.GetCurrentDirectory(), "pokedex.db");
+            if (File.Exists(rutaActual))
+                return $"Data Source={rutaActual}";
 
             // Si no encuentra, usa ruta relativa (se creará si no existe)
             return "Data Source=pokedex.db";
@@ -43,12 +49,6 @@ public class AccesoDatosSQLITE : IDisposable
         comando.Parameters.Clear();
         comando.CommandType = CommandType.Text;
         comando.CommandText = consulta;
-    }
-
-    public void setearProcedimiento(string sp)
-    {
-        // CAMBIO SQLITE: SQLite no usa Stored Procedures nativos.
-        throw new NotSupportedException("SQLite no soporta procedimientos almacenados nativamente.");
     }
 
     public void ejecutarLectura()
